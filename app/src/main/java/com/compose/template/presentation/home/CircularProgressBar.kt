@@ -1,4 +1,4 @@
-package com.compose.template.presentation.screens.home
+package com.compose.template.presentation.home
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding

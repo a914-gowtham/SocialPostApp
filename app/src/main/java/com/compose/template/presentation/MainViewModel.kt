@@ -1,4 +1,4 @@
-package com.compose.template
+package com.compose.template.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

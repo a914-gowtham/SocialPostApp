@@ -1,4 +1,4 @@
-package com.compose.template.ui.screens
+package com.compose.template.presentation.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,9 +11,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.compose.template.presentation.MainViewModel
-import com.compose.template.presentation.screens.home.CircularProgressBar
-import com.compose.template.presentation.screens.home.ErrorView
-import com.compose.template.presentation.screens.home.PostRow
 import com.compose.template.utils.ApiState
 
 @Composable

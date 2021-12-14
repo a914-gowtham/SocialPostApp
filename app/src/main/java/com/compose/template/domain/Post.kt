@@ -1,4 +1,4 @@
-package com.compose.template.model
+package com.compose.template.domain
 
 import com.squareup.moshi.Json
 

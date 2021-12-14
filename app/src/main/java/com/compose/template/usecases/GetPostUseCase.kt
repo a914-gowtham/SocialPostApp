@@ -1,7 +1,7 @@
 package com.compose.template.usecases
 
-import com.compose.template.model.Post
-import com.compose.template.remote.PostDataSourceImpl
+import com.compose.template.domain.Post
+import com.compose.template.data.PostDataSourceImpl
 import com.compose.template.utils.ApiState
 import javax.inject.Inject
 

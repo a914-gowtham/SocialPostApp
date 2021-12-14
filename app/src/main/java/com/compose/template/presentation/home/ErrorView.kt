@@ -1,4 +1,4 @@
-package com.compose.template.presentation.screens.home
+package com.compose.template.presentation.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
