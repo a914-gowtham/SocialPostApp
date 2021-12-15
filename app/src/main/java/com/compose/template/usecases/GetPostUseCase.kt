@@ -14,12 +14,13 @@ class GetPostUseCase @Inject constructor(
         return try {
             val response= postDataSource.getAllPost()
             LogMessage.v("Status Code ${response.code()}")
-            LogMessage.v("Headers Code ${response.headers()}")
 
-            if(response.isSuccessful)
-                ApiState.Success(response.body()?.data ?: emptyList())
-            else
-                ApiState.Failure(response.code(),response.message())
+            when {
+                // no cache available locally/no internet for the first time
+                response.code()==501 -> ApiState.Failure(501,"No internet connection!")
+                response.isSuccessful -> ApiState.Success(response.body()?.data ?: emptyList())
+                else -> ApiState.Failure(response.code(),response.message())
+            }
         }catch (e: Exception){
             ApiState.Failure(100,"No internet connection!")
         }
