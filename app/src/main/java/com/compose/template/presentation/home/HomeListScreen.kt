@@ -3,9 +3,9 @@ package com.compose.template.presentation.home
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -20,13 +20,20 @@ fun HomeScreen(
     val lazyPostList = viewModel.postState.collectAsState()
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Posts") }) },
-        modifier = Modifier.fillMaxSize()
+        topBar = {
+            TopAppBar(title = { Text("Posts") })
+        },
+        modifier = Modifier.fillMaxSize(),
+        floatingActionButton = {
+            FloatingActionButton(onClick = { viewModel.fetchAllPost() }) {
+                Icon(Icons.Default.Refresh, contentDescription = "Refresh Feed")
+            }
+        }
     ) {
 
         if (lazyPostList.value is ApiState.Success) {
             val posts = lazyPostList.value as ApiState.Success
-            LazyColumn(contentPadding = it,modifier = Modifier.padding(horizontal = 16.dp)) {
+            LazyColumn(contentPadding = it, modifier = Modifier.padding(horizontal = 16.dp)) {
                 items(posts.data) { post ->
                     PostRow(post = post)
                 }

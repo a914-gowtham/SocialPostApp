@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities.*
 import com.compose.template.data.ApiService
+import com.compose.template.utils.Constant
 import com.compose.template.utils.Constant.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -20,9 +21,6 @@ import javax.inject.Singleton
 import okhttp3.CacheControl
 import retrofit2.Invocation
 
-@Target(AnnotationTarget.FUNCTION)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class Cacheable
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -36,12 +34,14 @@ class AppModule {
     ): OkHttpClient {
         val logging = HttpLoggingInterceptor()
         logging.setLevel(HttpLoggingInterceptor.Level.BASIC)
-        val httpCacheDirectory = File(context.cacheDir, "oflineCache")
+        val httpCacheDirectory = File(context.cacheDir, "offlineCache")
         val cache = Cache(httpCacheDirectory, 5 * 1024 * 1024)
 
         return OkHttpClient.Builder()
             .cache(cache)
             .addInterceptor(logging)
+            .addNetworkInterceptor(ResponseCacheInterceptor())
+            .addInterceptor(OfflineResponseCacheInterceptor(context))
 //            .addNetworkInterceptor(provideCacheInterceptor())
 //            .addInterceptor(provideOfflineCacheInterceptor(context))
             .build()
@@ -58,55 +58,42 @@ class AppModule {
             .create(ApiService::class.java)
     }
 
-    private fun provideCacheInterceptor(): Interceptor {
-        return Interceptor { chain ->
-            var request: Request = chain.request()
-            val originalResponse: Response = chain.proceed(request)
-
-                originalResponse
-        }
-    }
-
-    private fun provideOfflineCacheInterceptor(context: Context): Interceptor {
-        return Interceptor { chain ->
-var request= chain.request()
-            if(!isNetConnected(context)){
-                val maxStale = 60 * 60 * 24 * 30
-                request = request.newBuilder()
-                    .header("Cache-Control", "public, only-if-cached, max-stale=$maxStale")
-                    .removeHeader("Pragma")
-                    .build();
-            }
-            chain.proceed(request)
-        }
-    }
-
-
 }
 
-class MainInterceptor : Interceptor {
-
+//https://krtkush.com/2016/06/01/caching-using-okhttp-part-1.html
+/**
+ * Interceptor to cache data and maintain it for a minute.
+ *
+ * If the same network request is sent within a minute,
+ * the response is retrieved from cache.
+ */
+class ResponseCacheInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        val request = chain.request()
-        val builder = request.newBuilder()
-        request.tag(Invocation::class.java)?.let {
-            if (!it.method().isAnnotationPresent(Cacheable::class.java)) {
-                builder.cacheControl(CacheControl.Builder()
-                    .noStore()
-                    .build())
-                return chain.proceed(builder.build())
-            }
-            try {
-                builder.cacheControl(CacheControl.FORCE_NETWORK)
-                return chain.proceed(builder.build())
-            } catch (e: Throwable) {
-                e.printStackTrace()
-            }
-            builder.cacheControl(CacheControl.Builder()
-                .maxStale(Int.MAX_VALUE, TimeUnit.DAYS)
-                .build())
+        val originalResponse: Response = chain.proceed(chain.request())
+        return originalResponse.newBuilder()
+            .header("Cache-Control", "public, max-age=" + 60)
+            .build()
+    }
+}
+
+/**
+ * Interceptor to cache data and maintain it for four weeks.
+ *
+ * If the device is offline, stale (at most four weeks old)
+ * response is fetched from the cache.
+ */
+private class OfflineResponseCacheInterceptor(val context: Context) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        var request: Request = chain.request()
+        if (!isNetConnected(context)) {
+            request = request.newBuilder()
+                .header(
+                    "Cache-Control",
+                    "public, only-if-cached, max-stale=" + 2419200
+                )
+                .build()
         }
-        return chain.proceed(builder.build())
+        return chain.proceed(request)
     }
 }
 
@@ -124,3 +111,5 @@ fun isNetConnected(context: Context): Boolean {
         else -> false
     }
 }
+
+
