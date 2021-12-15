@@ -17,7 +17,7 @@ class GetPostUseCase @Inject constructor(
 
             when {
                 // no cache available locally/no internet for the first time
-                response.code()==501 -> ApiState.Failure(501,"No internet connection!")
+                response.code()==504 -> ApiState.Failure(504,"No local cache! Please connect internet")
                 response.isSuccessful -> ApiState.Success(response.body()?.data ?: emptyList())
                 else -> ApiState.Failure(response.code(),response.message())
             }
