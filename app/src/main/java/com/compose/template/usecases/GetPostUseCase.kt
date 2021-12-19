@@ -13,7 +13,6 @@ class GetPostUseCase @Inject constructor(
     suspend fun execute(): ApiState<List<Post>>{
         return try {
             val response= postDataSource.getAllPost()
-            LogMessage.v("Status Code ${response.code()}")
 
             when {
                 // no cache available locally/no internet for the first time

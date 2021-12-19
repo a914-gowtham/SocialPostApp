@@ -78,12 +78,15 @@ dependencies {
     implementation(Dependencies.Hilt.dependency)
     kapt(Dependencies.Hilt.compiler)
 
+    implementation("com.github.a914-gowtham:compose-ratingbar:1.2.0")
+
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2")
     // unit test
     testImplementation("junit:junit:4.13.2")
     testImplementation( "androidx.test:core:1.4.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
     testImplementation("org.mockito:mockito-inline:3.9.0")
-    testImplementation("app.cash.turbine:turbine:1.0.0")
     testImplementation("com.google.truth:truth:1.1.3")
     testImplementation("org.robolectric:robolectric:4.4")
 }

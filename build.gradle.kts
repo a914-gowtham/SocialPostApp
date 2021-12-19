@@ -23,6 +23,14 @@ buildscript {
     }
 }
 
+allprojects {
+    repositories {
+        google()
+        maven("https://jitpack.io")
+        mavenCentral()
+    }
+}
+
 /* ./gradlew dependencyUpdates */
 tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
     rejectVersionIf {

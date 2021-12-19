@@ -22,13 +22,11 @@ class MainViewModel @Inject constructor(
         get() = _postState
 
     init {
-        LogMessage.v("MainViewModel init")
         fetchAllPost()
     }
 
 
     fun fetchAllPost() = viewModelScope.launch {
-        LogMessage.v("getPosts")
         _postState.value = ApiState.Loading
         _postState.value = getPostUseCase.execute()
     }
